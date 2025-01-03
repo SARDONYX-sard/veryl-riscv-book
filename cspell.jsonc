@@ -1,13 +1,16 @@
 {
   "words": [
     "autotools",
+    "FILELIST",
     "ILEN",
+    "Mdir",
     "membus",
     "modport",
     "rdata",
     "RISCV",
     "rvalid",
     "verilator",
+    "veryl",
     "verylup",
     "wdata",
     "XLEN"

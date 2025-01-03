@@ -21,4 +21,7 @@ sim:
 	make -C $(OBJ_DIR) -f V$(PROJECT)_$(TOP_MODULE).mk
 	mv $(OBJ_DIR)/V$(PROJECT)_$(TOP_MODULE) $(OBJ_DIR)/$(SIM_NAME)
 
+run: sim
+	obj_dir/sim core/src/sample.hex 5
+
 .PHONY: build clean sim
