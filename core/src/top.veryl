@@ -1,0 +1,45 @@
+import eei::*;
+
+module top #(
+    param MEMORY_FILEPATH_IS_ENV: bit    = 1                 ,
+    param MEMORY_FILEPATH       : string = "MEMORY_FILE_PATH",
+) (
+    clk: input clock,
+    rst: input reset,
+) {
+    inst membus     : membus_if::<MEM_DATA_WIDTH, MEM_ADDR_WIDTH>;
+    inst membus_core: membus_if::<ILEN, XLEN>;
+
+    inst mem: memory::<MEM_DATA_WIDTH, MEM_ADDR_WIDTH> #(
+        FILEPATH_IS_ENV: MEMORY_FILEPATH_IS_ENV,
+        FILEPATH       : MEMORY_FILEPATH       ,
+    ) (
+        clk     ,
+        rst     ,
+        membus  ,
+    );
+
+    function addr_to_memaddr (
+        addr: input logic<XLEN>          ,
+    ) -> logic<MEM_ADDR_WIDTH> {
+        // NOTE
+        // bit to bytes: MEM_DATA_WIDTH / 8
+        return addr[$clog2(MEM_DATA_WIDTH / 8)+:MEM_ADDR_WIDTH];
+    }
+
+    always_comb {
+        membus.valid       = membus_core.valid;
+        membus_core.ready  = membus.ready;
+        membus.addr        = addr_to_memaddr(membus_core.addr);
+        membus.wen         = 0; // Instruction fetch is always read
+        membus.wdata       = 'x;
+        membus_core.rvalid = membus.rvalid;
+        membus_core.rdata  = membus.rdata;
+    }
+
+    inst c: core (
+        clk                ,
+        rst                ,
+        membus: membus_core,
+    );
+}

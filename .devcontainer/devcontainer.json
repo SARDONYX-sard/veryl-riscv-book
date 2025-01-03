@@ -1,0 +1,29 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/dotnet
+{
+  "name": "riscv",
+  "dockerFile": "./Dockerfile",
+  "features": {
+    "ghcr.io/devcontainers-extra/features/gh-cli:1": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "EditorConfig.EditorConfig",
+        "alexclewontin.make-lsp-vscode",
+        "dalance.vscode-veryl",
+        "llvm-vs-code-extensions.vscode-clangd",
+        "oderwat.indent-rainbow",
+        "streetsidesoftware.code-spell-checker",
+        "tamasfe.even-better-toml",
+        "eamodio.gitlens",
+        "mhutchie.git-graph"
+      ],
+      "settings": {
+        "[json][jsonc]": {
+          "editor.defaultFormatter": "vscode.json-language-features"
+        }
+      }
+    }
+  }
+}

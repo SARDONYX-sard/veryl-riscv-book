@@ -1,0 +1,32 @@
+interface membus_if::<DATA_WIDTH: const, ADDR_WIDTH: const> {
+    // Is end write request?
+    var valid: logic            ;
+    var ready: logic            ;
+    var addr : logic<ADDR_WIDTH>;
+    // Is write request?
+    var wen  : logic            ;
+    var wdata: logic<DATA_WIDTH>;
+    // Is end read request?
+    var rvalid: logic            ;
+    var rdata : logic<DATA_WIDTH>;
+
+    modport master {
+        valid : output,
+        ready : input ,
+        addr  : output,
+        wen   : output,
+        wdata : output,
+        rvalid: input ,
+        rdata : input ,
+    }
+
+    modport slave {
+        valid : input ,
+        ready : output,
+        addr  : input ,
+        wen   : input ,
+        wdata : input ,
+        rvalid: output,
+        rdata : output,
+    }
+}
