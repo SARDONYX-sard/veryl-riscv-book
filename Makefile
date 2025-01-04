@@ -22,6 +22,6 @@ sim:
 	mv $(OBJ_DIR)/V$(PROJECT)_$(TOP_MODULE) $(OBJ_DIR)/$(SIM_NAME)
 
 run: build sim
-	obj_dir/sim core/src/sample.hex 5
+	obj_dir/sim core/src/sample.hex 7
 
 .PHONY: build clean sim
