@@ -8,11 +8,14 @@
     "modport",
     "rdata",
     "RISCV",
+    "rready",
     "rvalid",
     "verilator",
     "veryl",
     "verylup",
     "wdata",
+    "wready",
+    "wvalid",
     "XLEN"
   ]
 }

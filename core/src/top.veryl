@@ -20,7 +20,7 @@ module top #(
     );
 
     function addr_to_memaddr (
-        addr: input logic<XLEN>          ,
+        addr: input logic<XLEN>,
     ) -> logic<MEM_ADDR_WIDTH> {
         // NOTE
         // bit to bytes: MEM_DATA_WIDTH / 8

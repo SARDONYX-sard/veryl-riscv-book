@@ -2,24 +2,13 @@
 
 - ref: https://github.com/nananapo/veryl-riscv-book
 
-## NOTE: Need core.f manual ordering
-
-It seems to be a bug in VERYL according to the book's author.
-It seems that using veryl of commit 22cb6d6 will solve this problem.
-- https://github.com/veryl-lang/veryl/commit/22cb6d6d6e6c0959bf6bee5f0bb4ca981a35a9be
-
-```
-/workspaces/veryl-riscv-book/core/src/util.sv
-/workspaces/veryl-riscv-book/core/src/eei.sv
-/workspaces/veryl-riscv-book/core/src/memory.sv
-/workspaces/veryl-riscv-book/core/src/membus_if.sv
-/workspaces/veryl-riscv-book/core/src/core.sv
-/workspaces/veryl-riscv-book/core/src/top.sv
-```
-
-## TODO
+## TODOs
 
 - [ ] Simulation run with CI using containers created from the Dockerfile.
+
+## NOTE
+
+use v0.13.4 because there is a problem with the dependency path order in core.f before veryl v0.13.4
 
 ## License
 
