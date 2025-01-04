@@ -12,6 +12,9 @@ VERILATOR_FLAGS = ""
 build:
 	cd ./$(PROJECT) && veryl fmt && veryl build
 
+check:
+	cd ./$(PROJECT) && veryl fmt --check && veryl check
+
 clean:
 	veryl clean
 	rm -rf $(OBJ_DIR)
@@ -24,4 +27,4 @@ sim:
 run: build sim
 	obj_dir/sim core/src/sample.hex 7
 
-.PHONY: build clean sim
+.PHONY: build clean check sim run

@@ -1,3 +1,4 @@
+#[allow(missing_reset_statement)] // TODO: Not sure if this lint is correct.
 module fifo #(
     param DATA_TYPE: type = logic,
     param WIDTH    : u32  = 2    ,

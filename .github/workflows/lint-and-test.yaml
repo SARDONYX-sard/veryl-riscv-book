@@ -8,8 +8,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: veryl-lang/setup-veryl@v1
-    - run: cd ./core && veryl fmt --check
-    - run: cd ./core && veryl check
+    - run: make check
 
   test:
     runs-on: ubuntu-22.04

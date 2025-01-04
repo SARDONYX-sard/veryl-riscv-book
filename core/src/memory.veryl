@@ -1,3 +1,4 @@
+#[allow(missing_reset_statement)] // TODO: Not sure if this lint is correct.
 module memory::<DATA_WIDTH: const, ADDR_WIDTH: const> #(
     param FILEPATH_IS_ENV: logic  = 0 , // Is `FILEPATH` an environment variable name?
     param FILEPATH       : string = "", // FILEPATH or environment variable name

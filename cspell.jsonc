@@ -7,6 +7,7 @@
     "membus",
     "modport",
     "rdata",
+    "readmemh",
     "RISCV",
     "rready",
     "rvalid",
