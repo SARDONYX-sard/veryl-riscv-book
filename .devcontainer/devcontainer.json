@@ -16,6 +16,7 @@
         "llvm-vs-code-extensions.vscode-clangd",
         "mhutchie.git-graph",
         "oderwat.indent-rainbow",
+        "redhat.vscode-yaml",
         "streetsidesoftware.code-spell-checker",
         "tamasfe.even-better-toml"
       ],

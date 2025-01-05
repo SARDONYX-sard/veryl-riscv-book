@@ -1,0 +1,9 @@
+---
+AlignEscapedNewlines: Left
+AlignTrailingComments: true
+BasedOnStyle: WebKit
+BraceWrapping:
+    AfterFunction: false
+BreakBeforeBraces: Custom
+IndentWidth: 4
+PointerAlignment: Right

@@ -1,0 +1,28 @@
+{
+  "files.exclude": {
+    "**/*.f": true,
+    // "**/*.sv": true,
+    "**/dependencies": true,
+  },
+  "files.watcherExclude": {
+    "**/*.f": true,
+    "**/*.sv": true,
+    "**/.git/objects/**": true,
+    "**/dependencies": true,
+    "**/obj_dir": true,
+  },
+  "files.associations": {
+    ".clang-format": "yaml",
+    ".clang-tidy": "yaml",
+  },
+  "yaml.schemas": {
+    "https://raw.githubusercontent.com/grizzie17/clang-format-schema/refs/heads/master/clang-format-schema.json": [
+      ".clang-format",
+      "_clang-format",
+    ],
+    "https://json.schemastore.org/clang-tidy.json": [
+      ".clang-tidy",
+    ],
+    "https://json.schemastore.org/clangd.json": ".clangd"
+  },
+}
