@@ -64,6 +64,7 @@ RUN apt-get update && apt-get upgrade -y && \
   gnupg2 \
   mold \
   python3 \
+  ssh \
   unzip \
   verilator \
   vim \
