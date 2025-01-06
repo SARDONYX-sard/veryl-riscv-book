@@ -2,3 +2,4 @@
 **/dependencies/
 **/src/**/*.sv
 obj_dir/
+dump/

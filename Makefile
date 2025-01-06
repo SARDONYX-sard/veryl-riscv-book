@@ -25,6 +25,10 @@ sim:
 	mv $(OBJ_DIR)/V$(PROJECT)_$(TOP_MODULE) $(OBJ_DIR)/$(SIM_NAME)
 
 run: build sim
+	@echo "==============================================================================================================="
 	obj_dir/sim core/src/sample.hex 7
 
-.PHONY: build clean check sim run
+test:
+	cd ./$(PROJECT) && veryl test --verbose
+
+.PHONY: build clean check sim run test

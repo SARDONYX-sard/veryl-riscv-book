@@ -25,4 +25,7 @@
     ],
     "https://json.schemastore.org/clangd.json": ".clangd"
   },
+  "evenBetterToml.schema.associations": {
+    "^.*Veryl\\.toml$": "https://gist.github.com/SARDONYX-sard/a2d0054d469f9f8780e439c4e8092416/raw/ff269fc2930681ceea9148672ac4f3dd351b57e1/veryl.schema.json",
+  },
 }

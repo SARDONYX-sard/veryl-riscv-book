@@ -52,6 +52,10 @@ RUN git clone https://github.com/riscv/riscv-pk && \
 FROM ubuntu:22.04 as development
 
 ARG VERYLUP_VERSION=0.1.4
+# UBUNTU_VERSION: 20.04 | 22.04
+ARG UBUNTU_VERSION=22.04
+# ref: https://github.com/veryl-lang/verilator-package/releases
+ARG VERILATOR_VERSION=v5.026
 
 # build-essential: gcc, make
 RUN apt-get update && apt-get upgrade -y && \
@@ -66,7 +70,6 @@ RUN apt-get update && apt-get upgrade -y && \
   python3 \
   ssh \
   unzip \
-  verilator \
   vim \
   wget \
   && apt-get clean \
@@ -78,13 +81,20 @@ RUN wget -q https://github.com/veryl-lang/verylup/releases/download/v${VERYLUP_V
   && mv verylup /bin/verylup \
   && chmod +x /bin/verylup \
   && rm verylup-x86_64-linux.zip
-
 RUN verylup setup && verylup update
 
+# Install verilator(deps: wget, unzip)
+# NOTE: The verilator that comes in with apt is v4.038, which is too old and causes a `veryl test` argument error. Therefore, it is necessary to manually install it.
+RUN wget -q https://github.com/veryl-lang/verilator-package/releases/download/${VERILATOR_VERSION}/verilator-ubuntu-{UBUNTU_VERSION}.zip \
+  && unzip verilator-ubuntu-${UBUNTU_VERSION}.zip -d /opt/verilator \
+  && rm verilator-ubuntu-{UBUNTU_VERSION}.zip
+ENV PATH=/opt/verilator/bin:$PATH
+# NOTE: verilator is a perl script, Language settings are required to use perl.
+ENV LC_ALL=C.UTF-8
+
+# Install riscv-gnu-toolchain
 ENV RISCV=/opt/riscv
 ENV PATH=$RISCV/bin:$PATH
-# NOTE: Language settings are required to use perl.
-ENV LC_ALL=C.UTF-8
 
 WORKDIR /home
 SHELL ["/bin/bash", "-c"]

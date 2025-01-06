@@ -11,7 +11,7 @@ CompileFlags:
         - --include-directory=../../obj_dir/ # NOTE: Relative path from core/src/tb_verilator.cpp
         - --include-directory=/usr/include/c++/11
         - --include-directory=/usr/include/x86_64-linux-gnu/c++/11
-        - --include-directory=/usr/share/verilator/include/
-        - --include-directory=/usr/share/verilator/include/vltstd/
+        - --include-directory=/opt/verilator/include/
+        - --include-directory=/opt/verilator/include/vltstd/
 
     Compiler: g++
