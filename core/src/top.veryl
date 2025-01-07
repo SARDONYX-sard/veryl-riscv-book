@@ -19,11 +19,11 @@ module top #(
         membus  ,
     );
 
+    /// NOTE bits -> bytes: MEM_DATA_WIDTH(32) / 8 = 4bytes
+    /// [2^4+:16] => [16+:16] => [16:32] => 16bits
     function addr_to_memaddr (
         addr: input logic<XLEN>,
     ) -> logic<MEM_ADDR_WIDTH> {
-        // NOTE
-        // bit to bytes: MEM_DATA_WIDTH / 8
         return addr[$clog2(MEM_DATA_WIDTH / 8)+:MEM_ADDR_WIDTH];
     }
 
