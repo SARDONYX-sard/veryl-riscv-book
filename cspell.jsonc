@@ -22,6 +22,7 @@
     "RISCV",
     "rready",
     "rvalid",
+    "sltu",
     "Verilated",
     "verilator",
     "veryl",
