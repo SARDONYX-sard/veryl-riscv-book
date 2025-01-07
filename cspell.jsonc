@@ -1,12 +1,14 @@
 {
   "words": [
     "autotools",
+    "ccache",
     "FILELIST",
     "ILEN",
     "Mdir",
     "memaddr",
     "membus",
     "modport",
+    "OBJCACHE",
     "rdata",
     "readmemh",
     "RISCV",
