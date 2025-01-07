@@ -10,6 +10,10 @@ package eei {
     // memory address width
     const MEM_ADDR_WIDTH: u32 = 16;
 
+    type SIntX  = signed logic<XLEN>;
+    type SInt32 = signed logic<32>  ;
+    type SInt64 = signed logic<64>  ;
+
     type UIntX  = logic<XLEN>;
     type UInt32 = logic<32>  ;
     type UInt64 = logic<64>  ;
