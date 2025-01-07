@@ -95,6 +95,7 @@ module core (
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Decode
+
     let inst_pc  : Addr     = if_fifo_rdata.addr;
     let inst_bits: Inst     = if_fifo_rdata.bits;
     var inst_ctrl: InstCtrl;
@@ -107,6 +108,41 @@ module core (
     );
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Read & Define registers
+
+    var regfile: UIntX<32>; // Registers [xlen;32]
+
+    // Register number(e.g. x1 -> 1)
+    // # NOTE: Simple implementation
+    // Since the location of bits representing registers is the same for different instruction formats,
+    // here we will obtain the bits of one register each time for simplicity of implementation.
+    let rs1_addr: logic<5> = inst_bits[19:15];
+    let rs2_addr: logic<5> = inst_bits[24:20];
+
+    let rs1_data: UIntX = if rs1_addr == 0 { // x0 to 0
+        0
+    } else {
+        regfile[rs1_addr]
+    };
+    let rs2_data: UIntX = if rs2_addr == 0 {
+        0
+    } else {
+        regfile[rs2_addr]
+    };
+
+    always_ff {
+        if_reset {
+            for i: i32 in 0..32 {
+                // ERR
+                // In book it does + 100, but the operation in this place is not possible in veryl 0.13.4,
+                // so it is passed over with an assignment.
+                // If you edit the core.sv file directly and set `+ 100`, the result is as in book.
+                regfile[i] = i;
+            }
+        }
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Debug
 
     always_ff {
@@ -114,6 +150,8 @@ module core (
             $display("%h : %h", inst_pc, inst_bits);
             $display("  itype(0b)   : %b", inst_ctrl.itype);
             $display("  imm(0x)     : %h", inst_imm);
+            $display("  rs1[%d] : %h", rs1_addr, rs1_data);
+            $display("  rs2[%d] : %h", rs2_addr, rs2_data);
         }
     }
 }
