@@ -1,3 +1,4 @@
+import corectrl::*;
 import eei::*;
 
 module core (
@@ -93,13 +94,26 @@ module core (
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Decode
+    let inst_pc  : Addr     = if_fifo_rdata.addr;
+    let inst_bits: Inst     = if_fifo_rdata.bits;
+    var inst_ctrl: InstCtrl;
+    var inst_imm : UIntX   ;
+
+    inst decoder: inst_decoder (
+        bits: inst_bits,
+        ctrl: inst_ctrl,
+        imm : inst_imm ,
+    );
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Debug
-    let inst_pc  : Addr = if_fifo_rdata.addr;
-    let inst_bits: Inst = if_fifo_rdata.bits;
 
     always_ff {
         if if_fifo_rvalid {
             $display("%h : %h", inst_pc, inst_bits);
+            $display("  itype(0b)   : %b", inst_ctrl.itype);
+            $display("  imm(0x)     : %h", inst_imm);
         }
     }
 }
