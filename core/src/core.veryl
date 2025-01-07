@@ -132,11 +132,8 @@ module core (
 
     always_ff {
         if_reset {
-            for i: i32 in 0..32 {
-                // ERR
-                // In book it does + 100, but the operation in this place is not possible in veryl 0.13.4,
-                // so it is passed over with an assignment.
-                // If you edit the core.sv file directly and set `+ 100`, the result is as in book.
+            // NOTE: In book, + 100 is done, but the operation in this place is not possible in veryl 0.1
+            for i: i32 in (0 + 100)..(32 + 100) {
                 regfile[i] = i;
             }
         }
