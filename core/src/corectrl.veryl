@@ -1,0 +1,63 @@
+import eei::*;
+
+package corectrl {
+    /// Enumerated type representing the instruction format.
+    /// Each format specifies the structure of RISC-V instructions.
+    ///
+    /// - `X`: Reserved or undefined instruction format.
+    ///
+    /// - `R`:
+    ///   The format contains two source registers (`rs1`, `rs2`) and one destination register (`rd`).
+    ///   It uses the values from the two source registers for computation, storing the result in the destination register.
+    ///   Examples include the `ADD` (addition) and `SUB` (subtraction) instructions.
+    ///
+    /// - `I`:
+    ///   The format contains one source register (`rs1`) and one destination register (`rd`).
+    ///   It includes a 12-bit immediate value (`imm[11:0]`) as part of the instruction, which is used along with `rs1` for computation.
+    ///   The result is stored in the destination register.
+    ///   Examples include the `ADDI` (addition with an immediate value) and `ANDI` (bitwise AND with an immediate value) instructions.
+    ///
+    /// - `S`:
+    ///   The format contains two source registers (`rs1`, `rs2`).
+    ///   It includes a 12-bit immediate value, split into `imm[11:5]` and `imm[4:0]`, as part of the instruction.
+    ///   The sum of the immediate value and `rs1` specifies a memory address, into which the value from `rs2` is stored.
+    ///   An example is the `SW` instruction, which writes 32-bit data to memory.
+    ///
+    /// - `B`:
+    ///   The format contains two source registers (`rs1`, `rs2`).
+    ///   It includes a 12-bit immediate value, split into `imm[12]`, `imm[11]`, `imm[10:5]`, and `imm[4:1]`, as part of the instruction.
+    ///   Used for branch instructions, it performs a computation with the source registers, and if the branch condition is met,
+    ///   the program counter (PC) is updated to the address computed by adding the immediate value to the PC.
+    ///
+    /// - `U`:
+    ///   The format contains one destination register (`rd`).
+    ///   It includes a 20-bit immediate value (`imm[31:12]`) as part of the instruction.
+    ///   An example is the `LUI` instruction, which sets the upper 20 bits of the destination register.
+    ///
+    /// - `J`:
+    ///   The format contains one destination register (`rd`).
+    ///   It includes a 20-bit immediate value, split into `imm[20]`, `imm[19:12]`, `imm[11]`, and `imm[10:1]`, as part of the instruction.
+    ///   Used for jump instructions, it updates the program counter (PC) to the address computed by adding the immediate value to the PC.
+    ///   An example is the `JAL` (jump and link) instruction.
+    enum InstType: logic<6> {
+        X = 6'b000000,
+        R = 6'b000001,
+        I = 6'b000010,
+        S = 6'b000100,
+        B = 6'b001000,
+        U = 6'b010000,
+        J = 6'b100000,
+    }
+
+    /// Structure for flags used for control
+    struct InstCtrl {
+        itype   : InstType   , /// format of the instruction
+        rwb_en  : logic      , /// whether to write to the register
+        is_lui  : logic      , /// LUI instruction
+        is_aluop: logic      , /// is an instruction that uses ALU(Arithmetic Logic Unit)
+        is_jump : logic      , /// is a jump instruction
+        is_load : logic      , /// load instruction
+        funct3  : logic   <3>, /// funct3 field of instruction
+        funct7  : logic   <7>, /// funct7 field of instruction
+    }
+}
