@@ -132,9 +132,10 @@ module core (
 
     always_ff {
         if_reset {
-            // NOTE: In book, + 100 is done, but the operation in this place is not possible in veryl 0.1
+            // NOTE: In book, + 100 is done, but the operation in this place is not possible in veryl 0.13.4,
+            //       so the operation should be done in the range stage.
             for i: i32 in (0 + 100)..(32 + 100) {
-                regfile[i] = i;
+                regfile[i - 100] = i; // NOTE: index is 0 to 31
             }
         }
     }
