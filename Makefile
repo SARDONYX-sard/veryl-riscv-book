@@ -9,6 +9,12 @@ OBJ_DIR = obj_dir/
 SIM_NAME = sim
 VERILATOR_FLAGS = ""
 
+# mold, ld: (NOTE: verilator automatically uses mold if mold is present.)
+# - ref: https://github.com/verilator/verilator/issues/4289
+LINKER = mold
+COMPILER = g++ # g++ or clang++
+VERILATOR_FLAGS += -MAKEFLAGS "OBJCACHE=ccache CXX=$(COMPILER) LINK=$(LINKER)"
+
 build:
 	cd ./$(PROJECT) && veryl fmt && veryl build
 
@@ -16,7 +22,7 @@ check:
 	cd ./$(PROJECT) && veryl fmt --check && veryl check
 
 clean:
-	veryl clean
+	cd ./$(PROJECT) && veryl clean
 	rm -rf $(OBJ_DIR)
 
 sim:
