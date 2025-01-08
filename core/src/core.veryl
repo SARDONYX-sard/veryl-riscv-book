@@ -137,6 +137,10 @@ module core (
             for i: i32 in (0 + 100)..(32 + 100) {
                 regfile[i - 100] = i; // NOTE: index is 0 to 31
             }
+        } else {
+            if if_fifo_rvalid && inst_ctrl.rwb_en {
+                regfile[rd_addr] = wb_data;
+            }
         }
     }
 
@@ -175,6 +179,18 @@ module core (
     );
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Write back
+
+    // NOTE: These variables are used in the `always_ff` block in the `Read & Define registers` section.
+    //       This is because they are used to assign to `regfile` when reset is `false`.
+    let rd_addr: logic<5> = inst_bits[11:7];
+    let wb_data: UIntX    = if inst_ctrl.is_lui {
+        inst_imm
+    } else {
+        alu_result
+    };
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Debug
 
     always_ff {
@@ -187,6 +203,9 @@ module core (
             $display("  op1       : %h", op1);
             $display("  op2       : %h", op2);
             $display("  alu res   : %h", alu_result);
+            if inst_ctrl.rwb_en {
+                $display("  reg[%d]   <= %h", rd_addr, wb_data);
+            }
         }
     }
 }
