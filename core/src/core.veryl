@@ -130,20 +130,6 @@ module core (
         regfile[rs2_addr]
     };
 
-    always_ff {
-        if_reset {
-            // NOTE: In book, + 100 is done, but the operation in this place is not possible in veryl 0.13.4,
-            //       so the operation should be done in the range stage.
-            for i: i32 in (0 + 100)..(32 + 100) {
-                regfile[i - 100] = i; // NOTE: index is 0 to 31
-            }
-        } else {
-            if if_fifo_rvalid && inst_ctrl.rwb_en {
-                regfile[rd_addr] = wb_data;
-            }
-        }
-    }
-
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // ALU
     var op1       : UIntX;
@@ -181,14 +167,18 @@ module core (
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Write back
 
-    // NOTE: These variables are used in the `always_ff` block in the `Read & Define registers` section.
-    //       This is because they are used to assign to `regfile` when reset is `false`.
     let rd_addr: logic<5> = inst_bits[11:7];
     let wb_data: UIntX    = if inst_ctrl.is_lui {
         inst_imm
     } else {
         alu_result
     };
+
+    always_ff {
+        if if_fifo_rvalid && inst_ctrl.rwb_en {
+            regfile[rd_addr] = wb_data;
+        }
+    }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Debug
