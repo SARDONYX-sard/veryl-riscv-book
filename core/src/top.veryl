@@ -18,7 +18,7 @@ module top #(
             memarb_last_i = 0;
         } else {
             if membus.ready {
-                memarb_last_i = i_membus.valid;
+                memarb_last_i = !d_membus.valid;
             }
         }
     }
@@ -41,8 +41,8 @@ module top #(
     }
 
     always_comb {
-        i_membus.ready  = membus.ready;
-        i_membus.rvalid = membus.rvalid;
+        i_membus.ready  = membus.ready && !d_membus.valid;
+        i_membus.rvalid = membus.rvalid && memarb_last_i;
         i_membus.rdata  = membus.rdata;
 
         d_membus.ready  = membus.ready;

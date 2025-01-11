@@ -1,9 +1,9 @@
-02002503 // lw x10, 0x20(x0)
-40000593 // addi x11, x0, 0x400
-02b02023 // sw x11, 0x20(x0)
-02002603 // lw x12, 0x20(x0)
+02002503 // lw x10, 0x20(x0)    : x10 = 0x20 + 0(x0)
+40000593 // addi x11, x0, 0x400 : x11 = 0x400
+02b02023 // sw x11, 0x20(x0)    : mem[0x20 + 0(x0)] = x11
+02002603 // lw x12, 0x20(x0)    : x12 = mem[0x20 + 0(x0)]
 00000000
 00000000
 00000000
 00000000
-deadbeef // 0x20
+deadbeef // 4bytes(== 1 instruction is 32bit) * 8row = 32 -> That is, this line points to address 0x20.
