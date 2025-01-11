@@ -32,7 +32,7 @@ sim:
 
 run: build sim
 	@echo "==============================================================================================================="
-	obj_dir/sim core/src/sample.hex 6
+	obj_dir/sim core/src/sample.hex 13
 
 test:
 	cd ./$(PROJECT) && veryl test --verbose
