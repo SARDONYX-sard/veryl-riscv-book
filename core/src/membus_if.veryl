@@ -10,10 +10,13 @@ interface membus_if::<DATA_WIDTH: const, ADDR_WIDTH: const> {
     var rvalid: logic            ;
     var rdata : logic<DATA_WIDTH>;
 
+    var wmask: logic<DATA_WIDTH / 8>; // Signal indicating where to write in bytes.
+
     modport master {
         valid : output,
         ready : input ,
         addr  : output,
+        wmask : output,
         wen   : output,
         wdata : output,
         rvalid: input ,
@@ -24,6 +27,7 @@ interface membus_if::<DATA_WIDTH: const, ADDR_WIDTH: const> {
         valid : input ,
         ready : output,
         addr  : input ,
+        wmask : input ,
         wen   : input ,
         wdata : input ,
         rvalid: output,

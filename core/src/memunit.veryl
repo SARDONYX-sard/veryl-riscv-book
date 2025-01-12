@@ -36,9 +36,10 @@ module memunit (
 
     var state: State;
 
-    var req_wen  : logic                ;
-    var req_addr : Addr                 ;
-    var req_wdata: logic<MEM_DATA_WIDTH>;
+    var req_wen  : logic                    ;
+    var req_addr : Addr                     ;
+    var req_wdata: logic<MEM_DATA_WIDTH>    ;
+    var req_wmask: logic<MEM_DATA_WIDTH / 8>;
 
     const W   : u32                   = XLEN; // XLEN alias
     let D   : logic<MEM_DATA_WIDTH> = membus.rdata; // rdata alias
@@ -50,6 +51,7 @@ module memunit (
         membus.addr  = req_addr;
         membus.wen   = req_wen;
         membus.wdata = req_wdata;
+        membus.wmask = req_wmask;
 
         // load result
         rdata = case ctrl.funct3[1:0] {
@@ -86,6 +88,7 @@ module memunit (
             req_wen   = 0;
             req_addr  = 0;
             req_wdata = 0;
+            req_wmask = 0;
         } else {
             if valid {
                 case state {
@@ -94,6 +97,16 @@ module memunit (
                         req_wen   = inst_is_store(ctrl);
                         req_addr  = addr;
                         req_wdata = rs2;
+                        req_wmask = case ctrl.funct3[1:0] {
+                            2'b00  : 4'b1 << addr[1:0], // In case of SB instruction, shift 1 left by the lower 2 bits of the address
+                            2'b01  : case addr[1:0] { // For SH instruction
+                                2      : 4'b1100, // Write to upper 2 bytes
+                                0      : 4'b0011, // Write in the lower 2 bytes
+                                default: 'x,
+                            },
+                            2'b10  : 4'b1111, // At SW instruction, writes to the whole
+                            default: 'x,
+                        };
                     }
                     State::WaitReady: if membus.ready {
                         state = State::WaitValid;
