@@ -42,7 +42,7 @@ module memunit (
 
     const W   : u32                   = XLEN; // XLEN alias
     let D   : logic<MEM_DATA_WIDTH> = membus.rdata; // rdata alias
-    let sext: logic                 = ctrl.funct3[3] == 1'b0; // Whether to perform sign extension or not?
+    let sext: logic                 = ctrl.funct3[2] == 1'b0; // Whether to perform sign extension or not?
 
     always_comb {
         // Memory access
