@@ -15,7 +15,7 @@ module memory::<DATA_WIDTH: const, ADDR_WIDTH: const> #(
     var wmask_expand: DataType; // Write mask expanded to `DATA_WIDTH`
     always_comb {
         for i: u32 in 0..DATA_WIDTH {
-            wmask_expand[i] = membus.wmask[i / 8];
+            wmask_expand[i] = wmask_saved[i / 8];
         }
     }
 
@@ -49,7 +49,10 @@ module memory::<DATA_WIDTH: const, ADDR_WIDTH: const> #(
     }
 
     always_ff {
+        $display("wmask: %h", membus.wmask);
         if state == State::WriteValid {
+            $display                         ("Writing to address %h:", addr_saved[ADDR_WIDTH - 1:0]);
+            $display                         ("wdata: %h", wdata_saved);
             mem[addr_saved[ADDR_WIDTH - 1:0]] = wdata_saved & wmask_expand | rdata_saved & ~wmask_expand;
         }
     }
