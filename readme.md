@@ -2,10 +2,6 @@
 
 - ref: https://github.com/nananapo/veryl-riscv-book
 
-## TODOs
-
-- [ ] Simulation run with CI using containers created from the Dockerfile.
-
 ## NOTE
 
 use v0.13.4 because there is a problem with the dependency path order in core.f before veryl v0.13.4
