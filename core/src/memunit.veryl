@@ -55,7 +55,7 @@ module memunit (
 
         // load result
         rdata = case ctrl.funct3[1:0] {
-            // load byte => signed extension 16bits + 8bits
+            // load byte => (signed/unsigned) extension 16bits + 8bits
             2'b00  : case addr[1:0] {
                 0      : {sext & D[7] repeat W - 8, D[7:0]},
                 1      : {sext & D[15] repeat W - 8, D[15:8]},
@@ -63,7 +63,7 @@ module memunit (
                 3      : {sext & D[31] repeat W - 8, D[31:24]},
                 default: 'x,
             },
-            // load half => signed extension 8bits + 16bits
+            // load half => (signed/unsigned) extension 8bits + 16bits
             2'b01  : case addr[1:0] {
                 0      : {sext & D[15] repeat W - 16, D[15:0]},
                 2      : {sext & D[31] repeat W - 16, D[31:16]},
@@ -96,7 +96,7 @@ module memunit (
                         state     = State::WaitReady;
                         req_wen   = inst_is_store(ctrl);
                         req_addr  = addr;
-                        req_wdata = rs2;
+                        req_wdata = rs2 << {addr[1:0], 3'b0};
                         req_wmask = case ctrl.funct3[1:0] {
                             2'b00  : 4'b1 << addr[1:0], // In case of SB instruction, shift 1 left by the lower 2 bits of the address
                             2'b01  : case addr[1:0] { // For SH instruction
