@@ -59,8 +59,21 @@ module core (
     var control_hazard        : logic;
     var control_hazard_pc_next: Addr ;
 
-    assign control_hazard         = inst_valid && inst_ctrl.is_jump;
-    assign control_hazard_pc_next = alu_result;
+    /// Is a branch instruction?
+    function inst_is_br (
+        ctrl: input InstCtrl,
+    ) -> logic {
+        return ctrl.itype == InstType::B;
+    }
+
+    // 1 if it is an unconditional jump instruction such as `jal` or a conditional jump such as `beq`
+    // In this case, it means that the value of PC register is rewritten.
+    assign control_hazard         = inst_valid && (inst_ctrl.is_jump || inst_is_br(inst_ctrl) && brunit_take);
+    assign control_hazard_pc_next = if inst_is_br(inst_ctrl) {
+        inst_pc + inst_imm
+    } else {
+        alu_result
+    };
 
     always_ff {
         if_reset {
@@ -177,6 +190,19 @@ module core (
     );
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Branch
+
+    // This value affects the `control_hazard`(a jump instruction?) condition.
+    var brunit_take: logic;
+
+    inst bru: brunit (
+        funct3: inst_ctrl.funct3,
+        op1                     ,
+        op2                     ,
+        take  : brunit_take     ,
+    );
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // MemUnit
     let inst_valid : logic = if_fifo_rvalid;
     var inst_is_new: logic; // Whether the instruction was supplied with the current clock
@@ -250,6 +276,9 @@ module core (
                 $display("  op1       : %h", op1);
                 $display("  op2       : %h", op2);
                 $display("  alu res   : %h", alu_result);
+                if inst_is_br(inst_ctrl) {
+                    $display("  br take   : %b", brunit_take);
+                }
                 if if_fifo_rready && inst_ctrl.rwb_en {
                     $display("  reg[%d]   <= %h", rd_addr, wb_data);
                 }

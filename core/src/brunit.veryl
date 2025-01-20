@@ -1,0 +1,26 @@
+import eei::*;
+import corectrl::*;
+
+/// Conditional branch unit
+module brunit (
+    funct3: input  logic<3>,
+    op1   : input  UIntX   , // rs1
+    op2   : input  UIntX   , // rs2
+    take  : output logic   , // Whether or not a bifurcation is established
+) {
+    let beq : logic = op1 == op2;
+    let blt : logic = $signed(op1) <: $signed(op2); // less than (NOTE: `<:` is `<`)
+    let bltu: logic = op1 <: op2; // unsigned less than
+
+    always_comb {
+        case funct3 {
+            3'b000 : take = beq; //   BEQ: ==
+            3'b001 : take = !beq; //  BNE: !=
+            3'b100 : take = blt; //   BLT: signed <
+            3'b101 : take = !blt; //  BGE: signed >=
+            3'b110 : take = bltu; //  BLTU: unsigned <
+            3'b111 : take = !bltu; // BGEU: unsigned >=
+            default: take = 0; //     set to 0 if unknown
+        }
+    }
+}
