@@ -32,6 +32,7 @@ module core (
     ) (
         clk                   ,
         rst                   ,
+        flush : control_hazard,
         wready: if_fifo_wready,
         wvalid: if_fifo_wvalid,
         wdata : if_fifo_wdata ,
@@ -53,8 +54,13 @@ module core (
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    var if_is_requested: logic; // Is fetching
-    var if_pc_requested: Addr ; // requested address
+    var if_is_requested       : logic; // Is fetching
+    var if_pc_requested       : Addr ; // requested address
+    var control_hazard        : logic;
+    var control_hazard_pc_next: Addr ;
+
+    assign control_hazard         = inst_valid && inst_ctrl.is_jump;
+    assign control_hazard_pc_next = alu_result;
 
     always_ff {
         if_reset {
@@ -64,30 +70,36 @@ module core (
             if_fifo_wvalid  = 0;
             if_fifo_wdata   = 0;
         } else {
-            // Control FIFO of IF
-            if if_is_requested && i_membus.rvalid { // when fetched
-                if_fifo_wvalid     = 1;
-                if_fifo_wdata.addr = if_pc_requested;
-                if_fifo_wdata.bits = i_membus.rdata;
+            if control_hazard {
+                if_pc           = control_hazard_pc_next;
+                if_is_requested = 0;
+                if_fifo_wvalid  = 0;
             } else {
-                if if_fifo_wvalid && if_fifo_wready { // when data can be stored in the FIFO
-                    if_fifo_wvalid = 0;
-                }
-            }
-
-            if if_is_requested {
-                if i_membus.rvalid {
-                    if_is_requested = i_membus.ready && i_membus.valid;
+                if if_is_requested {
+                    if i_membus.rvalid {
+                        if_is_requested = i_membus.ready && i_membus.valid;
+                        if i_membus.ready && i_membus.valid {
+                            if_pc           = if_pc_next;
+                            if_pc_requested = if_pc;
+                        }
+                    }
+                } else {
                     if i_membus.ready && i_membus.valid {
+                        if_is_requested = 1;
                         if_pc           = if_pc_next;
                         if_pc_requested = if_pc;
                     }
                 }
-            } else {
-                if i_membus.ready && i_membus.valid {
-                    if_is_requested = 1;
-                    if_pc           = if_pc_next;
-                    if_pc_requested = if_pc;
+
+                // Control FIFO of IF
+                if if_is_requested && i_membus.rvalid { // when fetched
+                    if_fifo_wvalid     = 1;
+                    if_fifo_wdata.addr = if_pc_requested;
+                    if_fifo_wdata.bits = i_membus.rdata;
+                } else {
+                    if if_fifo_wvalid && if_fifo_wready { // when data can be stored in the FIFO
+                        if_fifo_wvalid = 0;
+                    }
                 }
             }
         }
@@ -203,6 +215,8 @@ module core (
     let rd_addr: logic<5> = inst_bits[11:7];
     let wb_data: UIntX    = if inst_ctrl.is_lui {
         inst_imm
+    } else if inst_ctrl.is_jump {
+        inst_pc + 4 // 4 is the instruction width of 32 bits (4 bytes) and the address of the next instruction
     } else if inst_ctrl.is_load {
         memu_rdata
     } else {

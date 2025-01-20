@@ -5,6 +5,7 @@ module fifo #(
 ) (
     clk   : input  clock    ,
     rst   : input  reset    ,
+    flush : input  logic    , /// When flush is true, it is initialized as when the reset signal is received.
     wready: output logic    ,
     wvalid: input  logic    ,
     wdata : input  DATA_TYPE,
@@ -24,11 +25,15 @@ module fifo #(
             if_reset {
                 rvalid = 0;
             } else {
-                if wready && wvalid {
-                    rdata  = wdata;
-                    rvalid = 1;
-                } else if rready {
+                if flush {
                     rvalid = 0;
+                } else {
+                    if wready && wvalid {
+                        rdata  = wdata;
+                        rvalid = 1;
+                    } else if rready {
+                        rvalid = 0;
+                    }
                 }
             }
         }
@@ -54,12 +59,17 @@ module fifo #(
                 head = 0;
                 tail = 0;
             } else {
-                if wready && wvalid {
-                    mem[tail] = wdata;
-                    tail      = tail + 1;
-                }
-                if rready && rvalid {
-                    head = head + 1;
+                if flush {
+                    head = 0;
+                    tail = 0;
+                } else {
+                    if wready && wvalid {
+                        mem[tail] = wdata;
+                        tail      = tail + 1;
+                    }
+                    if rready && rvalid {
+                        head = head + 1;
+                    }
                 }
             }
         }
