@@ -1,0 +1,7 @@
+00100093 //  0: addi x1, x0, 1
+10100063 //  4: beq x0, x1, 0x100 : x0 == x1 => jump to `pc + 0x100` -> false -> Not jump.
+00101863 //  8: bne x0, x1, 0x10  : x0 != x1 => jump to `pc + 0x10` -> false -> Jump to 0x18 address.
+deadbeef //  c:
+deadbeef // 10:
+deadbeef // 14:
+0000d063 // 18: bge x1, x0, 0     : x1 >= x0 => jump to pc + 0 -> true -> Jump to 0x18(This instruction)
