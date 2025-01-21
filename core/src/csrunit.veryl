@@ -4,6 +4,7 @@ import corectrl::*;
 /// ctrl InstCtrl input InstCtrl of the instruction
 /// csr_addr logic<12> input Address of the CSR specified by the instruction (upper 12 bits of the instruction)
 
+#[allow(unused_variable)]
 module csrunit (
     clk     : input  clock       ,
     rst     : input  reset       ,
@@ -13,6 +14,11 @@ module csrunit (
     rs1     : input  UIntX       , /// rs1 UIntX input Value of rs1 when CSRR(W|S|C), Value of rs1 when CSRR(W|S|C)I, value of rs1 when CSRR(W|S|C)I, value of rs1 when CSRR(W|S|C)I, value of rs1 when CSRR(W|S|C)I is extended with zero
     rdata   : output UIntX       , /// Result of CSR read by CSR instruction
 ) {
+
+    always_comb {
+        rdata = 'x; // lint of dummy
+    }
+
     // Is CSRR(W|S|C)[I] instruction?
     let is_wsc: logic = ctrl.is_csr && ctrl.funct3[1:0] != 0;
 }
