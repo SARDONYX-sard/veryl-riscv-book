@@ -49,14 +49,16 @@ package corectrl {
         J = 6'b100000,
     }
 
+    // NOTE: Constructed in `inst_decoder.veryl`, it is dangerous to replace this order of declaration at random.
     /// Structure for flags used for control
     struct InstCtrl {
-        itype   : InstType   , /// format of the instruction
-        rwb_en  : logic      , /// whether to write to the register
+        itype   : InstType   , /// Format of the instruction
+        rwb_en  : logic      , /// Whether to write to the register
         is_lui  : logic      , /// LUI instruction
-        is_aluop: logic      , /// is an instruction that uses ALU(Arithmetic Logic Unit)
-        is_jump : logic      , /// is a jump instruction
-        is_load : logic      , /// load instruction
+        is_aluop: logic      , /// Is an instruction that uses ALU(Arithmetic Logic Unit)
+        is_jump : logic      , /// Is a jump instruction
+        is_load : logic      , /// Load instruction
+        is_csr  : logic      , /// Control and status register instruction?
         funct3  : logic   <3>, /// funct3 field of instruction
         funct7  : logic   <7>, /// funct7 field of instruction
     }
