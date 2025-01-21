@@ -190,6 +190,36 @@ module core (
     );
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Control and Status Register
+
+    var csru_rdata: UIntX;
+
+    inst csru: csrunit (
+        clk                       ,
+        rst                       ,
+        valid   : inst_valid      ,
+        ctrl    : inst_ctrl       ,
+        csr_addr: inst_bits[31:20],
+
+        // |funct3|instruction|
+        // |3'b001|   CSRRW   |
+        // |3'b101|   CSRRWI  |
+        // |3'b010|   CSRRS   |
+        // |3'b110|   CSRRSI  |
+        // |3'b011|   CSRRC   |
+        // |3'b111|   CSRRCI  |
+        //
+        // - The 2nd bit == 1 => immediate value
+        // - funct3[1:0] != 0 => valid csr instruction
+        rs1: if inst_ctrl.funct3[2] == 1 && inst_ctrl.funct3[1:0] != 0 {
+            {1'b0 repeat XLEN - $bits(rs1_addr), rs1_addr} // Extend rs1 with 0
+        } else {
+            rs1_data
+        },
+        rdata: csru_rdata                                                                                                                ,
+    );
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Branch
 
     // This value affects the `control_hazard`(a jump instruction?) condition.
@@ -245,6 +275,8 @@ module core (
         inst_pc + 4 // 4 is the instruction width of 32 bits (4 bytes) and the address of the next instruction
     } else if inst_ctrl.is_load {
         memu_rdata
+    } else if inst_ctrl.is_csr {
+        csru_rdata
     } else {
         alu_result
     };
@@ -276,6 +308,9 @@ module core (
                 $display("  op1       : %h", op1);
                 $display("  op2       : %h", op2);
                 $display("  alu res   : %h", alu_result);
+                if inst_ctrl.is_csr {
+                    $display("  csr rdata : %h", csru_rdata);
+                }
                 if inst_is_br(inst_ctrl) {
                     $display("  br take   : %b", brunit_take);
                 }
