@@ -2,6 +2,8 @@
 
 - ref: https://github.com/nananapo/veryl-riscv-book
 
+[RISC-V hex converter](https://www.eg.bucknell.edu/~csci206/riscv-converter/)
+
 ## NOTE
 
 use v0.13.4 because there is a problem with the dependency path order in core.f before veryl v0.13.4

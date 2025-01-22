@@ -68,8 +68,10 @@ module core (
 
     // 1 if it is an unconditional jump instruction such as `jal` or a conditional jump such as `beq`
     // In this case, it means that the value of PC register is rewritten.
-    assign control_hazard         = inst_valid && (inst_ctrl.is_jump || inst_is_br(inst_ctrl) && brunit_take);
-    assign control_hazard_pc_next = if inst_is_br(inst_ctrl) {
+    assign control_hazard         = inst_valid && (csru_raise_trap || inst_ctrl.is_jump || inst_is_br(inst_ctrl) && brunit_take);
+    assign control_hazard_pc_next = if csru_raise_trap {
+        csru_trap_vector
+    } else if inst_is_br(inst_ctrl) {
         inst_pc + inst_imm
     } else {
         alu_result
@@ -192,13 +194,17 @@ module core (
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Control and Status Register
 
-    var csru_rdata: UIntX;
+    var csru_rdata      : UIntX;
+    var csru_raise_trap : logic; // When an exception occurs, the value is set to 1.
+    var csru_trap_vector: Addr ; // When an exception occurs, the address of the jump destination is output.
 
     inst csru: csrunit (
         clk                       ,
         rst                       ,
         valid   : inst_valid      ,
+        pc      : inst_pc         ,
         ctrl    : inst_ctrl       ,
+        rd_addr                   ,
         csr_addr: inst_bits[31:20],
 
         // |funct3|instruction|
@@ -216,7 +222,9 @@ module core (
         } else {
             rs1_data
         },
-        rdata: csru_rdata                                                                                                                ,
+        rdata      : csru_rdata                                                                                                                ,
+        raise_trap : csru_raise_trap                                                                                                           ,
+        trap_vector: csru_trap_vector                                                                                                          ,
     );
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -312,6 +320,8 @@ module core (
                 $display("  memu rdata: %h", memu_rdata);
                 if inst_ctrl.is_csr {
                     $display("  csr rdata : %h", csru_rdata);
+                    $display("  csr trap  : %b", csru_raise_trap);
+                    $display("  csr vec   : %h", csru_trap_vector);
                 }
                 if inst_is_br(inst_ctrl) {
                     $display("  br take   : %b", brunit_take);
