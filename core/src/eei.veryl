@@ -36,18 +36,35 @@ package eei {
     /// There are 4,096 CSRs, of which mtvec is the 305th.
     ///
     /// WARL: Write any values, Read regal values
+    ///
+    /// - [CSR list docs](https://five-embeddev.com/riscv-priv-isa-manual/Priv-v1.12/priv-csrs.html#csr-listing)
+    /// - CSR number ref: The RISC-V Instruction Set Manual Volume II: Privileged Architecture.pdf -> Control and Status Registers (CSRs) -> CSR Listing
     enum CsrAddr: logic<12> {
         /// |-------------------------|------------|
         /// | BASE[MXLEN - 1:2](WARL) | MODE(WARL) |
         /// |-------------------------|------------|
         /// When in Direct mode, the jump destination at the time of trapping is BASE << 2
-        /// https://five-embeddev.com/riscv-priv-isa-manual/Priv-v1.12/machine.html#machine-trap-vector-base-address-register-mtvec
+        /// - [mtvec docs](https://five-embeddev.com/riscv-priv-isa-manual/Priv-v1.12/machine.html#machine-trap-vector-base-address-register-mtvec)
         MTVEC = 12'h305,
+        /// Executing ecall raises an exception, but the PC where the exception occurred (program counter) address value where the exception occurred is stored.
+        /// - [mepc docs](https://five-embeddev.com/riscv-priv-isa-manual/Priv-v1.12/machine.html#machine-exception-program-counter-mepc)
+        MEPC = 12'h341,
+        /// Executing ecall raises an exception, but the exception code and interrupt flag where the exception occurred
+        /// - [mcause docs](https://five-embeddev.com/riscv-priv-isa-manual/Priv-v1.12/machine.html#sec:mcause)
+        MCAUSE = 12'h342,
+    }
+
+    /// - [mcause docs](https://five-embeddev.com/riscv-priv-isa-manual/Priv-v1.12/machine.html#sec:mcause)
+    enum CsrCause: UIntX {
+        /// By system call
+        ENVIRONMENT_CALL_FROM_M_MODE = 11,
     }
 
     // NOTE: NOTE: I had to leave const in eei or veryl lsp would crash.
 
     /// This mask disables writing to the mode bit position.
     /// 0xfffffffc: Mask that sets the last 2bits data range for mode to 0
-    const MTVEC_WMASK: UIntX = 'hffff_fffc;
+    const MTVEC_WMASK : UIntX = 'hffff_fffc;
+    const MEPC_WMASK  : UIntX = 'hffff_fffc;
+    const MCAUSE_WMASK: UIntX = 'hffff_ffff;
 }
