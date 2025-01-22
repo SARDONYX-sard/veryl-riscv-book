@@ -57,7 +57,7 @@ module inst_decoder (
             OP_STORE : {InstType::S, F, F, F, F, F, F},
             OP_OP    : {InstType::R, T, F, T, F, F, F},
             OP_OP_IMM: {InstType::I, T, F, T, F, F, F},
-            OP_SYSTEM: {InstType::I, F, F, F, F, F, T},
+            OP_SYSTEM: {InstType::I, T, F, F, F, F, T},
             default  : {InstType::X, F, F, F, F, F, F},
 
         }, f3, f7};
