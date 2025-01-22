@@ -35,6 +35,7 @@
     "memunit",
     "MEPC",
     "modport",
+    "mret",
     "mtvec",
     "MXLEN",
     "OBJCACHE",

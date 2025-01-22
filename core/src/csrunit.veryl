@@ -49,17 +49,31 @@ module csrunit (
     // Is CSRR(W|S|C)[I] instruction?
     let is_wsc: logic = ctrl.is_csr && ctrl.funct3[1:0] != 0;
 
-    // ecall(32bit: high <- low) fmt: { 12'b000000000000, 5'b00000, 3'b000, 5'b00000, 7'b1110011 }
+    // ECALL instruction:
+    //                                  csr addr     , rs1[4:0] , funct3, rd addr,  opcode
+    // format(32bit: high <- low): { 12'b000000000000, 5'b00000, 3'b000, 5'b00000, 7'b1110011 }
     let is_ecall: logic = ctrl.is_csr && csr_addr == 0 && rs1[4:0] == 0 && ctrl.funct3 == 0 && rd_addr == 0;
+    // MRET instruction:
+    // - Trap destination -> Trap source.
+    // - Jump to mepc
+    // - Use case: kernel land -> user land
+    //
+    //                                    csr addr    , rs1[4:0] , funct3, rd addr,  opcode
+    // format(32bit: high <- low) : { 12'b001100000010, 5'b00000, 3'b000, 5'b00000, 7'b1110011 }
+    let is_mret: logic = ctrl.is_csr && csr_addr == 12'b0011000_00010 && rs1[4:0] == 0 && ctrl.funct3 == 0 && rd_addr == 0;
 
     // Exception
     let raise_expt: logic = valid && is_ecall;
     let expt_cause: UIntX = CsrCause::ENVIRONMENT_CALL_FROM_M_MODE;
 
     // Trap
-    assign raise_trap  = raise_expt;
+    assign raise_trap  = raise_expt || (valid && is_mret);
     let trap_cause : UIntX = expt_cause;
-    assign trap_vector = mtvec;
+    assign trap_vector = if raise_expt {
+        mtvec
+    } else {
+        mepc
+    };
 
     always_ff {
         if_reset {
