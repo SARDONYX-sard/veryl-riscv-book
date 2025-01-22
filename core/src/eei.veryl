@@ -32,4 +32,22 @@ package eei {
     const OP_LOAD  : logic<7> = 7'b0000011;
     const OP_STORE : logic<7> = 7'b0100011;
     const OP_SYSTEM: logic<7> = 7'b1110011;
+
+    /// There are 4,096 CSRs, of which mtvec is the 305th.
+    ///
+    /// WARL: Write any values, Read regal values
+    enum CsrAddr: logic<12> {
+        /// |-------------------------|------------|
+        /// | BASE[MXLEN - 1:2](WARL) | MODE(WARL) |
+        /// |-------------------------|------------|
+        /// When in Direct mode, the jump destination at the time of trapping is BASE << 2
+        /// https://five-embeddev.com/riscv-priv-isa-manual/Priv-v1.12/machine.html#machine-trap-vector-base-address-register-mtvec
+        MTVEC = 12'h305,
+    }
+
+    // NOTE: NOTE: I had to leave const in eei or veryl lsp would crash.
+
+    /// This mask disables writing to the mode bit position.
+    /// 0xfffffffc: Mask that sets the last 2bits data range for mode to 0
+    const MTVEC_WMASK: UIntX = 'hffff_fffc;
 }

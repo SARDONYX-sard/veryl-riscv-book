@@ -308,6 +308,8 @@ module core (
                 $display("  op1       : %h", op1);
                 $display("  op2       : %h", op2);
                 $display("  alu res   : %h", alu_result);
+                $display("  memu stall: %b", memu_stall);
+                $display("  memu rdata: %h", memu_rdata);
                 if inst_ctrl.is_csr {
                     $display("  csr rdata : %h", csru_rdata);
                 }
@@ -317,8 +319,6 @@ module core (
                 if if_fifo_rready && inst_ctrl.rwb_en {
                     $display("  reg[%d]   <= %h", rd_addr, wb_data);
                 }
-                $display("  memu stall: %b", memu_stall);
-                $display("  memu rdata: %h", memu_rdata);
             }
         }
     }
