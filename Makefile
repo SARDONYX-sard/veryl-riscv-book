@@ -31,7 +31,7 @@ sim:
 	mv $(OBJ_DIR)/V$(PROJECT)_$(TOP_MODULE) $(OBJ_DIR)/$(SIM_NAME)
 
 run: build sim
-	obj_dir/sim core/src/sample_ecall.hex 10
+	obj_dir/sim core/src/sample_mret.hex 9
 
 test:
 	cd ./$(PROJECT) && veryl test --verbose
