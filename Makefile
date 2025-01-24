@@ -33,21 +33,24 @@ sim:
 run: build sim
 	./$(OBJ_DIR)/$(SIM_NAME) core/src/sample_mret.hex 9
 
-test: build
+test: build patch
 	$(MAKE) sim VERILATOR_FLAGS="-DTEST_MODE" && ./$(OBJ_DIR)/$(SIM_NAME) $(PWD)/core/tests/share/riscv-tests/isa/rv32ui-p-add.bin.hex 0
 
 test-debug: build
 	$(MAKE) sim VERILATOR_FLAGS="-DTEST_MODE" && ./$(OBJ_DIR)/$(SIM_NAME) $(PWD)/core/tests/share/riscv-tests/isa/rv32ui-p-add.bin.hex 1500 > ./dump.txt
 
 patch:
-ifeq ($(wildcard riscv-tests),) # “riscv-tests” directory exists? -> If not, clone & build
+ifeq ($(wildcard riscv-tests),) # Check if "riscv-tests" directory exists. If not, clone and build it
 	git submodule update --init --recursive
 	cd ./riscv-tests && ./configure --prefix=$(PWD)/core/tests && make && make install
 endif
+# Convert files to binary format and then to hex
+ifeq ($(wildcard core/tests/share),) # Check if core/tests/share exists before proceeding with further commands
 	git apply patches/env_ld.patch
 	find core/tests/share/ -type f -not -name "*.dump" -exec riscv64-unknown-elf-objcopy -O binary {} {}.bin \;
 	find core/tests/share/ -type f -name "*.bin" -exec sh -c "python3 ./core/tests/bin2hex.py 4 {} > {}.hex" \;
 	git apply --reverse patches/env_ld.patch
+endif
 
 doc-test:
 	python3 $(PWD)/core/tests/doctest_runner.py $(PWD)/core/tests/bin2hex.py
