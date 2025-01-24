@@ -41,6 +41,7 @@ ifeq ($(wildcard riscv-tests),) # Check if "riscv-tests" directory exists. If no
 	git submodule update --init --recursive
 	cd ./riscv-tests && ./configure --prefix=$(PWD)/core/tests && make && make install
 endif
+
 # Convert files to binary format and then to hex
 ifeq ($(wildcard core/tests/share),) # Check if core/tests/share exists before proceeding with further commands
 	git apply $(PWD)/patches/env_ld.patch
