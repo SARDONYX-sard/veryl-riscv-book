@@ -1,5 +1,6 @@
 **/*.f
 **/dependencies/
 **/src/**/*.sv
-obj_dir/
+core/tests/share/
 dump/
+obj_dir/

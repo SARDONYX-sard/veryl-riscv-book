@@ -74,7 +74,7 @@ module core (
     } else if inst_is_br(inst_ctrl) {
         inst_pc + inst_imm
     } else {
-        alu_result
+        alu_result & ~1 // round down to even numbers
     };
 
     always_ff {
@@ -254,7 +254,7 @@ module core (
         valid : inst_valid ,
         is_new: inst_is_new,
         ctrl  : inst_ctrl  ,
-        addr  : inst_imm   ,
+        addr  : alu_result ,
         rs2   : rs2_data   ,
         rdata : memu_rdata ,
         stall : memu_stall ,

@@ -31,9 +31,25 @@ sim:
 	mv $(OBJ_DIR)/V$(PROJECT)_$(TOP_MODULE) $(OBJ_DIR)/$(SIM_NAME)
 
 run: build sim
-	obj_dir/sim core/src/sample_mret.hex 9
+	./$(OBJ_DIR)/$(SIM_NAME) core/src/sample_mret.hex 9
 
-test:
-	cd ./$(PROJECT) && veryl test --verbose
+test: build
+	$(MAKE) sim VERILATOR_FLAGS="-DTEST_MODE" && ./$(OBJ_DIR)/$(SIM_NAME) $(PWD)/core/tests/share/riscv-tests/isa/rv32ui-p-add.bin.hex 0
 
-.PHONY: build clean check sim run test
+test-debug: build
+	$(MAKE) sim VERILATOR_FLAGS="-DTEST_MODE" && ./$(OBJ_DIR)/$(SIM_NAME) $(PWD)/core/tests/share/riscv-tests/isa/rv32ui-p-add.bin.hex 1500 > ./dump.txt
+
+patch:
+ifeq ($(wildcard riscv-tests),) # “riscv-tests” directory exists? -> If not, clone & build
+	git submodule update --init --recursive
+	cd ./riscv-tests && ./configure --prefix=$(PWD)/core/tests && make && make install
+endif
+	git apply patches/env_ld.patch
+	find core/tests/share/ -type f -not -name "*.dump" -exec riscv64-unknown-elf-objcopy -O binary {} {}.bin \;
+	find core/tests/share/ -type f -name "*.bin" -exec sh -c "python3 ./core/tests/bin2hex.py 4 {} > {}.hex" \;
+	git apply --reverse patches/env_ld.patch
+
+doc-test:
+	python3 $(PWD)/core/tests/doctest_runner.py $(PWD)/core/tests/bin2hex.py
+
+.PHONY: build clean check sim run test patch python

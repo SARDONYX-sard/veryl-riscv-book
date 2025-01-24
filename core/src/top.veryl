@@ -6,12 +6,36 @@ module top #(
 ) (
     clk: input clock,
     rst: input reset,
+    #[ifdef(TEST_MODE)]
+    test_success: output bit,
 ) {
     inst membus  : membus_if::<MEM_DATA_WIDTH, MEM_ADDR_WIDTH>; // <32, 16>
     inst i_membus: membus_if::<ILEN, XLEN>; // <32, 32>
     inst d_membus: membus_if::<MEM_DATA_WIDTH, XLEN>; // <32, 32>: For load & store instructions
 
     var memarb_last_i: logic;
+
+    // Detect the end of riscv-tests
+    #[ifdef(TEST_MODE)]
+    always_ff {
+        // Why 0x1000?
+        // Defined in (workspace/riscv-tests/env/p/link.ld)
+        // ```
+        //  . = ALIGN(0x1000);
+        //  .tohost : { *(.tohost) }
+        // ```
+        let RISCVTESTS_TOHOST_ADDR: Addr = 'h1000 as Addr;
+        if d_membus.valid && d_membus.ready && d_membus.wen == 1 && d_membus.addr == RISCVTESTS_TOHOST_ADDR && d_membus.wdata[lsb] == 1'b1 {
+            test_success = d_membus.wdata == 1;
+            if d_membus.wdata == 1 {
+                $display("riscv-tests success!");
+            } else {
+                $display("riscv-tests failed!");
+                $error  ("wdata : %h", d_membus.wdata);
+            }
+            $finish();
+        }
+    }
 
     always_ff {
         if_reset {

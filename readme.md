@@ -1,6 +1,7 @@
 # veryl-riscv-book
 
 - ref: https://github.com/nananapo/veryl-riscv-book
+- ref impl: https://github.com/nananapo/veryl-riscv-book/wiki/techbookfest17-support-page
 
 [RISC-V hex converter](https://www.eg.bucknell.edu/~csci206/riscv-converter/)
 

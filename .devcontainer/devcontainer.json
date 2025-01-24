@@ -18,7 +18,8 @@
         "oderwat.indent-rainbow",
         "redhat.vscode-yaml",
         "streetsidesoftware.code-spell-checker",
-        "tamasfe.even-better-toml"
+        "tamasfe.even-better-toml",
+        "donjayamanne.python-extension-pack"
       ],
       "settings": {
         "[json][jsonc]": {
