@@ -33,9 +33,13 @@ jobs:
         path: /opt/riscv
     - name: Install RISC-V toolchain
       run: |
-        wget -q https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/2025.01.17/riscv64-elf-ubuntu-22.04-gcc-nightly-2025.01.17-nightly.tar.xz
-        sudo mkdir -p ${{ env.RISCV }}
-        sudo tar -xvf riscv64-elf-ubuntu-22.04-gcc-nightly-2025.01.17-nightly.tar.xz -C /opt
+        sudo apt-get update && sudo apt-get install -y --no-install-recommends \
+          ca-certificates ccache mold \
+          git autoconf automake autotools-dev curl python3 libmpc-dev libmpfr-dev libgmp-dev \
+          gawk build-essential bison flex texinfo gperf libtool patchutils bc zlib1g-dev libexpat-dev
+
+        git clone https://github.com/riscv/riscv-gnu-toolchain && cd riscv-gnu-toolchain && \
+          ./configure --prefix=${{ env.RISCV }} && make newlib -j"$(nproc)"
         echo "${{ env.RISCV }}/bin" >> $GITHUB_PATH
 
     - uses: actions/cache@v4
@@ -43,5 +47,3 @@ jobs:
         key: ${{ runner.os }}-riscv-tests
         path: ./core/tests/share
     - run: make test
-      env:
-        RISCV: ${{ env.RISCV }}
