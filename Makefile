@@ -39,6 +39,9 @@ test: build patch
 patch:
 ifeq ($(wildcard riscv-tests),) # Check if "riscv-tests" directory exists. If not, clone and build it
 	git submodule update --init --recursive
+endif
+
+ifeq ($(wildcard core/tests/share),) # Check if core/tests/share exists before proceeding with further commands
 	cd ./riscv-tests && ./configure --prefix=$(PWD)/core/tests && make && make install
 endif
 
