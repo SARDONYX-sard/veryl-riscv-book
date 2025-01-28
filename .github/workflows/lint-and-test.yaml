@@ -7,6 +7,9 @@ on:
     types: [opened, reopened, synchronize]
   workflow_dispatch:
 
+env:
+  RISCV: /opt/riscv
+
 jobs:
   check:
     runs-on: ubuntu-22.04
@@ -17,8 +20,18 @@ jobs:
 
   test:
     runs-on: ubuntu-22.04
+    container:
+      image: sardonyx30/veryl-riscv-toolchain:latest
     steps:
     - uses: actions/checkout@v4
-    - uses: veryl-lang/setup-veryl@v1
-    - uses: veryl-lang/setup-verilator@v1
-    - run: make run
+      with:
+        submodules: true
+
+    - run: verylup setup && verylup update
+    - run: apt-get update && apt-get install -y autoconf
+
+    - uses: actions/cache@v4
+      with:
+        key: ${{ runner.os }}-riscv-tests
+        path: ./core/tests/share
+    - run: make test
