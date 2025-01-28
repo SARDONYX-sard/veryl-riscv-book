@@ -38,6 +38,29 @@ jobs:
         sudo tar -xvf riscv64-elf-ubuntu-22.04-gcc-nightly-2025.01.17-nightly.tar.xz -C /opt
         echo "${{ env.RISCV }}/bin" >> $GITHUB_PATH
 
+    - name: Install RISC-V ISA simulator
+      run: |
+        sudo apt-get install -y --no-install-recommends device-tree-compiler
+        git clone https://github.com/riscv/riscv-isa-sim.git && \
+          cd riscv-isa-sim && \
+          mkdir build && \
+          cd build && \
+          ../configure --prefix=$RISCV && \
+          make -j"$(nproc)" && \
+          make install
+
+    # riscv proxy kernel
+    - name: Install RISC-V proxy kernel
+      run: |
+        sudo apt-get install -y --no-install-recommends device-tree-compiler
+        git clone clone https://github.com/riscv/riscv-pk && \
+        cd riscv-pk && \
+        mkdir build && \
+        cd build && \
+        ../configure --prefix=$RISCV --host=riscv64-unknown-elf && \
+        make -j"$(nproc)" && \
+        make install
+
     - uses: actions/cache@v4
       with:
         key: ${{ runner.os }}-riscv-tests
