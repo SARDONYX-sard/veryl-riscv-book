@@ -27,6 +27,8 @@ jobs:
       with:
         submodules: true
 
+    - run: verylup setup && verylup update
+
     - uses: actions/cache@v4
       with:
         key: ${{ runner.os }}-riscv-tests
