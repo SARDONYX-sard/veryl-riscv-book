@@ -28,7 +28,7 @@ jobs:
         submodules: true
 
     - run: verylup setup && verylup update
-    - run: sudo apt-get update && sudo apt-get install -y autoconf
+    - run: apt-get update && apt-get install -y autoconf
 
     - uses: actions/cache@v4
       with:
